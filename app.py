@@ -101,7 +101,7 @@ def index():
 
 @app.route('/login')
 def login():
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         return redirect(url_for('index'))
     google = get_google_auth()
     auth_url, state = google.authorization_url(
@@ -112,7 +112,7 @@ def login():
 
 @app.route('/gCallback')
 def callback():
-    if current_user is not None and current_user.is_authenticated():
+    if current_user is not None and current_user.is_authenticated:
         return redirect(url_for('index'))
     if 'error' in request.args:
         if request.args.get('error') == 'access_denied':
