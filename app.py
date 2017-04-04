@@ -2,11 +2,9 @@ import os
 import json
 import datetime
 
-from flask import Flask, url_for, redirect, \
-    render_template, session, request
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.login import LoginManager, login_required, login_user, \
-    logout_user, current_user, UserMixin
+from flask import Flask, url_for, redirect, render_template, session, request
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, login_required, login_user,  logout_user, current_user, UserMixin
 from requests_oauthlib import OAuth2Session
 from requests.exceptions import HTTPError
 
@@ -17,10 +15,9 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Auth:
     """Google Project Credentials"""
-    CLIENT_ID = ('688061596571-3c13n0uho6qe34hjqj2apincmqk86ddj'
-                 '.apps.googleusercontent.com')
-    CLIENT_SECRET = 'JXf7Ic_jfCam1S7lBJalDyPZ'
-    REDIRECT_URI = 'https://localhost:5000/gCallback'
+    CLIENT_ID = os.environ.get('CLIENT_ID')
+    CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
+    REDIRECT_URI = 'https://127.0.0.1:5000/gCallback'
     AUTH_URI = 'https://accounts.google.com/o/oauth2/auth'
     TOKEN_URI = 'https://accounts.google.com/o/oauth2/token'
     USER_INFO = 'https://www.googleapis.com/userinfo/v2/me'
@@ -31,6 +28,7 @@ class Config:
     """Base config"""
     APP_NAME = "Test Google Login"
     SECRET_KEY = os.environ.get("SECRET_KEY") or "somethingsecret"
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
 class DevConfig(Config):
@@ -154,3 +152,8 @@ def callback():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+if __name__ == "__main__":
+    db.create_all()
+    app.run(ssl_context=('server.crt', 'server.key'))
